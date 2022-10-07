@@ -15,7 +15,7 @@ function fetchAndSortSneakers() {
   fetch(API)
     .then(resp => resp.json())
     .then(json => {
-      
+
       for (let i = 0; i < json.length; i++) {
         json[i].index = i;
       }
@@ -35,13 +35,25 @@ const kingCollection = document.querySelector('#king-collection')
 sneakerCollection.className = "fade"
 
 let currentOrder
+let firstTime = true
+
 function renderSneakersToScreen(sneaker) {
-  currentOrder = sneaker
-  console.log(currentOrder)
-  kingCollection.textContent = ""
-  sneakerCollection.textContent = ""
-  makeCrownSneakerCard(sneaker[0])
-  sneaker.slice(1).forEach(makeSneakerCard)
+  if (firstTime === true) {
+    currentOrder = sneaker
+    // console.log(currentOrder)
+    kingCollection.textContent = ""
+    sneakerCollection.textContent = ""
+    makeCrownSneakerCard(sneaker[0])
+    sneaker.slice(1).forEach(makeSneakerCard)
+  } else {
+    console.log('hey')
+    currentOrder = sneaker
+    // console.log(currentOrder)
+    kingCollection.textContent = ""
+    sneakerCollection.textContent = ""
+    makeCrownSneakerCardSecondTime(sneaker[0])
+    sneaker.slice(1).forEach(makeSneakerCardSecondTime)
+  }
 };
 
 function makeCrownSneakerCard(sneaker) {
@@ -99,6 +111,68 @@ function makeCrownSneakerCard(sneaker) {
 
   likeButton.addEventListener('click', e => {
     currentSneaker = sneaker
+    firstTime = false
+    // onClick(e)
+    patchLikes(e, currentSneaker, sneakerLikes)
+  })
+};
+
+function makeCrownSneakerCardSecondTime(sneaker) {
+
+  const sneakerCard = document.createElement('div')
+
+  const crown = document.createElement('p')
+
+  const userName = document.createElement('p');
+  const imageUrl = document.createElement('img');
+  const sneakerDesc = document.createElement('p');
+  const likesContainer = document.createElement('p')
+  const sneakerLikes = document.createElement('span')
+  const likesWord = document.createElement('span')
+  const likeButton = document.createElement('button')
+
+  // imageUrl.onclick = 'enlargeImg(this)'
+  sneakerCard.className = "fade"
+  sneakerCard.className = "sneaker-card-king"
+  imageUrl.className = 'sneaker-pic-crown'
+  userName.className = 'userName-text'
+  sneakerDesc.className = 'desc-text'
+  likeButton.className = 'likeButton'
+  crown.className = 'crown'
+  userName.className = 'username-crown-text'
+
+
+
+  likeButton.textContent = "s~m~a~s~h"
+  userName.textContent = `${sneaker.username} posted their kicks:`;
+  imageUrl.src = sneaker.image;
+  imageUrl.alt = `${userName.textContent} ${sneaker.description}`
+  sneakerDesc.textContent = sneaker.description;
+  crown.textContent = '👑'
+
+  sneakerLikes.textContent = sneaker.likes + 1
+
+  likesWord.textContent = 'likes: '
+  // likesContainer.textContent = `${likesWord} ${sneakerLikes}`
+  likesContainer
+  likesContainer.append(likesWord, sneakerLikes)
+  sneakerCard.append(crown, userName, imageUrl, sneakerDesc, likeButton, likesContainer);
+  kingCollection.append(sneakerCard)
+
+  // imageUrl.addEventListener('click', e => {
+  //   enlargeImg(e.target)
+  //   e.target.addEventListener('click', e => {
+  //     shrinkImg(e.target)
+  //   })
+  // })
+
+  imageUrl.addEventListener('click', e => {
+    e.target.classList.toggle('sneaker-pic-toggle')
+  })
+
+  likeButton.addEventListener('click', e => {
+    currentSneaker = sneaker
+    firstTime = false
     // onClick(e)
     patchLikes(e, currentSneaker, sneakerLikes)
   })
@@ -191,7 +265,59 @@ function makeSneakerCard(sneaker) {
   })
   likeButton.addEventListener('click', e => {
     currentSneaker = sneaker
-    likeButton.disabled = true
+    firstTime = false
+    // onClick(e)
+    patchLikes(e, currentSneaker, sneakerLikes)
+  })
+};
+
+function makeSneakerCardSecondTime(sneaker) {
+
+  const sneakerCard = document.createElement('div')
+  const userName = document.createElement('p');
+  const imageUrl = document.createElement('img');
+  const sneakerDesc = document.createElement('p');
+  const likesContainer = document.createElement('p')
+  const sneakerLikes = document.createElement('span')
+  const likesWord = document.createElement('span')
+  const likeButton = document.createElement('button')
+
+  // imageUrl.onclick = 'enlargeImg(this)'
+  sneakerCard.className = "fade"
+  sneakerCard.className = "sneaker-card"
+  imageUrl.className = 'sneaker-pic'
+  userName.className = 'userName-text'
+  sneakerDesc.className = 'desc-text'
+  likeButton.className = 'likeButton'
+
+  // const sneakerID = sneaker.id
+
+  likeButton.textContent = "s~m~a~s~h"
+  userName.textContent = `${sneaker.username} posted their kicks:`;
+  imageUrl.src = sneaker.image;
+  imageUrl.alt = `${userName.textContent} ${sneaker.description}`
+  sneakerDesc.textContent = sneaker.description;
+
+
+
+
+  sneakerLikes.textContent = sneaker.likes + 1
+
+
+  likesWord.textContent = 'likes: '
+  // likesContainer.textContent = `${likesWord} ${sneakerLikes}`
+  likesContainer
+  likesContainer.append(likesWord, sneakerLikes)
+  sneakerCard.append(userName, imageUrl, sneakerDesc, likeButton, likesContainer);
+  sneakerCollection.append(sneakerCard)
+
+
+  imageUrl.addEventListener('click', e => {
+    e.target.classList.toggle('sneaker-pic-toggle')
+  })
+  likeButton.addEventListener('click', e => {
+    currentSneaker = sneaker
+    firstTime = false
     // onClick(e)
     patchLikes(e, currentSneaker, sneakerLikes)
   })
@@ -227,18 +353,19 @@ function patchLikes(e, currentSneaker, sneakerLikes) {
 
   fetch(`http://localhost:3000/Sneakers/${currentSneaker.id}`, config)
     .then(sneakerLikes.classList.add('fade'))
-    .then(sneakerLikes.textContent = `${currentSneaker.likes + 1}`)
-    // .then(sortSneakersAfterLike(currentOrder))
-  .then(fetchAndSortSneakers)
+    // .then(sneakerLikes.textContent = `${currentSneaker.likes + 1}`)
+    .then(sortSneakersAfterLike(currentOrder, currentSneaker, sneakerLikes))
+  // .then(fetchAndSortSneakers)
 }
 
-function sortSneakersAfterLike(currentOrder) {
+function sortSneakersAfterLike(currentOrder, currentSneaker, sneakerLikes) {
   for (let i = 0; i < currentOrder.length; i++)
     currentOrder[i].index = i;
 
   renderSneakersToScreen(
     currentOrder.sort(sortByProperty('likes'))
   )
+  // sneakerLikes.textContent = `${currentSneaker.likes + 1}`
 }
 
 fetchAndSortSneakers()
